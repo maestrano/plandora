@@ -1,6 +1,13 @@
 package com.maestrano.core.sso;
 
 import com.maestrano.core.MnoSettings;
+import javax.xml.bind.DatatypeConverter;
+import java.util.Calendar;
+import java.net.*;
+import java.io.*;
+
+
+import com.google.gson.Gson;
 
 class MnoSsoSession
 {
@@ -12,52 +19,46 @@ class MnoSsoSession
   /**
    * Session object
    */
-  public session = null;
+  public Object session = null;
   
   /**
    * User UID
    */
-  public uid = '';
+  public String uid;
   
   /**
    * Maestrano SSO token
    */
-  public token = '';
+  public String token;
   
   /**
    * When to recheck for validity of the sso session
    */
-  public recheck = null;
+  public Calendar recheck = null;
   
   /**
    * Construct the MnoSsoSession object
    *
-   * @param MnoSettings mnoSettings
-   *   A Maestrano Settings object
-   * @param Array session
-   *   A session object, usually _SESSION
-   *
    */
-  public function MnoSsoSession(MnoSettings mnoSettings,&session)
+  public function MnoSsoSession(MnoSettings mnoSettings, Object session)
   {
       // Populate attributes from params
       this.settings = mnoSettings;
-      this.session = & session;
+      this.session = session;
       this.uid = session['mnoUid'];
       this.token = session['mnoSession'];
-      this.recheck = new DateTime(session['mnoSessionRecheck']);
+      this.recheck = DatatypeConverter.parseDateTime(session['mnoSessionRecheck']);
+      
   }
   
   /**
    * Check whether we need to remotely check the
    * session or not
-   *
-   * @return boolean
    */
-   public function remoteCheckRequired()
+   public Boolean remoteCheckRequired()
    {
-     if (this.uid && this.token && this.recheck) {
-       if(this.recheck > (new DateTime('NOW'))) {
+     if (this.uid != null && this.token != null && this.recheck != null) {
+       if (this.recheck.compareTo(Calendar.getInstance()) > 0 ) {
          return false;
        }
      }
@@ -71,9 +72,9 @@ class MnoSsoSession
     *
     * @return string the endpoint url
     */
-    public function sessionCheckUrl()
+    public String sessionCheckUrl()
     {
-      url = this.settings.ssoSessionCheckUrl . '/' . this.uid . '?session=' . this.token;
+      url = this.settings.getSsoSessionCheckUrl() + '/' + this.uid + '?session=' + this.token;
       return url;
     }
     
@@ -83,22 +84,31 @@ class MnoSsoSession
      * @param string full url to fetch
      * @return string page content
      */
-    public function fetchUrl(url) {
-      return fileGetContents(url);
+    public String fetchUrl(String url) {
+      URL urlObj = new URL(url);
+      
+      BufferedReader in = new BufferedReader(
+      new InputStreamReader(oracle.openStream()));
+      String inputLine;
+      String outputLine;
+      
+      while ((inputLine = in.readLine()) != null)
+          outputLine = outputLine + inputLine;
+      in.close();
+      
+      return outputLine;
     }
     
   /**
    * Perform remote session check on Maestrano
-   *
-   * @return boolean the validity of the session
    */
-   public function performRemoteCheck() {
+   public Boolean performRemoteCheck() {
      json = this.fetchUrl(this.sessionCheckUrl());
-     if (json) {
-      response = jsonDecode(json,true);
+     if (json != null) {
+      SessionJsonData response = new Gson().fromJson(json, SessionJsonData.class);
       
-      if (response['valid'] && response['recheck']) {
-        this.recheck = new DateTime(response['recheck']);
+      if (response.getValid() && response.getRecheck != null) {
+        this.recheck = DatatypeConverter.parseDateTime(response.getRecheck());
         return true;
       }
      }
@@ -112,13 +122,17 @@ class MnoSsoSession
     * the recheck timestamp
     * If a remote check is performed then the mnoSessionRecheck
     * timestamp is updated in session.
-    *
-    * @return boolean the validity of the session
     */
-    public function isValid() {
+    public Boolean isValid() {
       if (this.remoteCheckRequired()) {
         if (this.performRemoteCheck()) {
-          this.session['mnoSessionRecheck'] = this.recheck.format(DateTime::ISO8601);
+          
+          TimeZone tz = TimeZone.getTimeZone("UTC");
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+          df.setTimeZone(tz);
+          String recheckISO = df.format(this.recheck.getTime());
+          
+          this.session['mnoSessionRecheck'] = recheckISO;
           return true;
         } else {
           return false;
