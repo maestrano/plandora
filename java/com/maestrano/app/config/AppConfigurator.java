@@ -10,7 +10,7 @@ public class AppConfigurator {
   public String ssoReturnUrl;
   
   public AppConfigurator() {
-    String fullHost = "http://localhost:8888";
+    String fullHost = "http://localhost:8080/pandora/jsp";
     
     // Application name
     this.appName = "myapp";

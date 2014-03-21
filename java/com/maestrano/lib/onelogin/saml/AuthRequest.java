@@ -15,6 +15,10 @@ import org.apache.commons.codec.binary.Base64;
 import com.maestrano.lib.onelogin.AccountSettings;
 import com.maestrano.lib.onelogin.AppSettings;
 
+import java.io.*;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+
 public class AuthRequest {
 	
 	private String id;
@@ -29,7 +33,7 @@ public class AuthRequest {
 		issueInstant = simpleDf.format(new Date());		
 	}
 	
-	public String getRequest(int format) throws XMLStreamException {
+	public String getRequest(int format) throws XMLStreamException, IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();		
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		XMLStreamWriter writer = factory.createXMLStreamWriter(baos);
@@ -68,7 +72,15 @@ public class AuthRequest {
 		writer.flush();		
 		
 		if (format == base64) {
-			byte [] encoded = Base64.encodeBase64Chunked(baos.toByteArray());
+      
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      // create deflater without header
+      DeflaterOutputStream def = null;
+      def = new DeflaterOutputStream(out, new Deflater(Deflater.BEST_COMPRESSION, true));
+      def.write(baos.toByteArray());
+      def.close();
+      
+			byte [] encoded = Base64.encodeBase64Chunked(out.toByteArray());
 			String result = new String(encoded,Charset.forName("UTF-8"));
 						
 			return result;
