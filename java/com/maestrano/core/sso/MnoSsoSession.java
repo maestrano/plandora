@@ -45,9 +45,9 @@ class MnoSsoSession
       // Populate attributes from params
       this.settings = mnoSettings;
       this.session = session;
-      this.uid = session['mnoUid'];
-      this.token = session['mnoSession'];
-      this.recheck = DatatypeConverter.parseDateTime(session['mnoSessionRecheck']);
+      this.uid = session.get('mno_uid');
+      this.token = session.get('mno_session');
+      this.recheck = DatatypeConverter.parseDateTime(session.get('mno_session_recheck'));
       
   }
   
@@ -132,7 +132,7 @@ class MnoSsoSession
           df.setTimeZone(tz);
           String recheckISO = df.format(this.recheck.getTime());
           
-          this.session['mnoSessionRecheck'] = recheckISO;
+          this.session.set('mno_session_recheck', recheckISO);
           return true;
         } else {
           return false;

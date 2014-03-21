@@ -248,9 +248,15 @@ class MnoSsoBaseUser
   public Boolean signIn()
   {
     if (this.setInSession()) {
-      this.session['mnoUid'] = this.uid;
-      this.session['mnoSession'] = this.ssoSession;
-      this.session['mnoSessionRecheck'] = this.ssoSessionRecheck.format(DateTime::ISO8601);
+      this.session.set('mno_uid',this.uid);
+      this.session.set('mno_session', this.ssoSession);
+      
+      TimeZone tz = TimeZone.getTimeZone("UTC");
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+      df.setTimeZone(tz);
+      String recheckISO = df.format(this.ssoSessionRecheck);
+      
+      this.session.set('mno_session_recheck', recheckISO);
       
       return true;
     }
