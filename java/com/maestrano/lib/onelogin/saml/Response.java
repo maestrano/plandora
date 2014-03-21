@@ -50,24 +50,24 @@ public class Response {
 		loadXml(decodedS);	
 	}
 	
-        public boolean isValid() throws Exception {
-            NodeList nodes = xmlDoc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+  public boolean isValid() throws Exception {
+      NodeList nodes = xmlDoc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
 
-            if (nodes == null || nodes.getLength() == 0) {
-                throw new Exception("Can't find signature in document.");
-            }
+      if (nodes == null || nodes.getLength() == 0) {
+          throw new Exception("Can't find signature in document.");
+      }
 
-            if (setIdAttributeExists()) {
-                tagIdAttributes(xmlDoc);
-            }
+      if (setIdAttributeExists()) {
+          tagIdAttributes(xmlDoc);
+      }
 
-            X509Certificate cert = certificate.getX509Cert();
-            DOMValidateContext ctx = new DOMValidateContext(cert.getPublicKey(), nodes.item(0));
-            XMLSignatureFactory sigF = XMLSignatureFactory.getInstance("DOM");
-            XMLSignature xmlSignature = sigF.unmarshalXMLSignature(ctx);
+      X509Certificate cert = certificate.getX509Cert();
+      DOMValidateContext ctx = new DOMValidateContext(cert.getPublicKey(), nodes.item(0));
+      XMLSignatureFactory sigF = XMLSignatureFactory.getInstance("DOM");
+      XMLSignature xmlSignature = sigF.unmarshalXMLSignature(ctx);
 
-            return xmlSignature.validate(ctx);
-        }
+      return xmlSignature.validate(ctx);
+  }
 	
 	public String getNameId() throws Exception {
 		NodeList nodes = xmlDoc.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "NameID");		
@@ -78,27 +78,41 @@ public class Response {
 
 		return nodes.item(0).getTextContent();
 	}
+  
+  public HashMap<String> getAttributes() {
+    HashMap attributes;
+    
+    NodeList nodes = xmlDoc.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "Attribute");
+    for (int i = 0; i < nodeList.getLength(); i++) {
+        Node node = nodeList.item(i);
+        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+          attributes.put(node.getNodeName(),node.getNodeValue());
+        }
+    }
+    
+    return attributes;
+  }
         
-        private void tagIdAttributes(Document xmlDoc) {
-            NodeList nodeList = xmlDoc.getElementsByTagName("*");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    if (node.getAttributes().getNamedItem("ID") != null) {
-                        ((Element) node).setIdAttribute("ID", true);
-                    }
-                }
-            }
-        }
+  private void tagIdAttributes(Document xmlDoc) {
+      NodeList nodeList = xmlDoc.getElementsByTagName("*");
+      for (int i = 0; i < nodeList.getLength(); i++) {
+          Node node = nodeList.item(i);
+          if (node.getNodeType() == Node.ELEMENT_NODE) {
+              if (node.getAttributes().getNamedItem("ID") != null) {
+                  ((Element) node).setIdAttribute("ID", true);
+              }
+          }
+      }
+  }
 
-        private boolean setIdAttributeExists() {
-            for (Method method : Element.class.getDeclaredMethods()) {
-                if (method.getName().equals("setIdAttribute")) {
-                    return true;
-                }
-            }
-            return false;
-        }
+  private boolean setIdAttributeExists() {
+      for (Method method : Element.class.getDeclaredMethods()) {
+          if (method.getName().equals("setIdAttribute")) {
+              return true;
+          }
+      }
+      return false;
+  }
 
         
 }
