@@ -1,16 +1,16 @@
 package com.maestrano.core.sso;
 
-class SessionJsonData {
-  private String valid;
-  private Boolean recheck;
+public class SessionJsonData {
+  private Boolean valid;
+  private String recheck;
   
-  public String getvalid() { return valid; }
-  public String getRecheck() { return recheck; }
+  public Boolean getValid() { return this.valid; }
+  public String getRecheck() { return this.recheck; }
 
-  public void setvalid(String valid) { this.valid = valid; }
+  public void setValid(Boolean valid) { this.valid = valid; }
   public void setRecheck(String recheck) { this.recheck = recheck; }
 
   public String toString() {
-    return String.format("mno_uid:%s,mno_session:%s", valid, recheck);
+    return String.format("mno_uid:%s,mno_session:%s", this.valid, this.recheck);
   }
 }

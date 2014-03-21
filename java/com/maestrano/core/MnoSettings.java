@@ -7,7 +7,7 @@ public class MnoSettings {
   /**
    * The name of the application.
    */
-  public String appName = 'myapp';
+  public String appName = "myapp";
   
   /**
    * Is SSO enabled for this application
@@ -23,34 +23,34 @@ public class MnoSettings {
   /**
    * Maestrano Single Sign On url
    */
-  public String ssoUrl = '';
+  public String ssoUrl = "";
   
   /**
    * The URL where the SSO request should be initiated.
    */
-  public String ssoInitUrl = '';
+  public String ssoInitUrl = "";
   
   /**
    * The URL where the SSO response will be posted.
    */
-  public String ssoReturnUrl = '';
+  public String ssoReturnUrl = "";
   
   /**
    * The URL where the application should redirect if
    * user is not given access.
    */
-  public String ssoAccessUnauthorizedUrl = '';
+  public String ssoAccessUnauthorizedUrl = "";
   
   /**
    * The URL where the application should redirect when
    * user logs out
    */
-  public String ssoAccessLogoutUrl = '';
+  public String ssoAccessLogoutUrl = "";
   
   /**
    * The x509 certificate used to authenticate the request.
    */
-  public String ssoX509Certificate = '';
+  public String ssoX509Certificate = "";
   
   /**
    * Specifies what format to return the identification token (Maestrano user UID)
@@ -60,13 +60,13 @@ public class MnoSettings {
   /**
    * The Maestrano endpoint in charge of providing session information
    */
-  public String ssoSessionCheckUrl = '';
+  public String ssoSessionCheckUrl = "";
   
   /**
    * Constructor
    * Use variables set in AppConfigurator and MnoConfigurator
    */
-  public void MnoSettings(AppConfigurator aConfig, MnoConfigurator mConfig) {
+  public MnoSettings(AppConfigurator aConfig, MnoConfigurator mConfig) {
     // Application specific configuration
     this.appName = aConfig.appName;
     this.ssoEnabled = aConfig.ssoEnabled;
@@ -74,7 +74,7 @@ public class MnoSettings {
     this.ssoReturnUrl = aConfig.ssoReturnUrl;
     
     // Maestrano environment configuration
-    this.ssoUrl = mConfig.ssourl;
+    this.ssoUrl = mConfig.ssoUrl;
     this.ssoSessionCheckUrl = mConfig.ssoSessionCheckUrl;
     this.ssoAccessUnauthorizedUrl = mConfig.ssoAccessUnauthorizedUrl;
     this.ssoAccessLogoutUrl = mConfig.ssoAccessLogoutUrl;

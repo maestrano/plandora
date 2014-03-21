@@ -2,13 +2,26 @@ package com.maestrano.core.sso;
 
 import com.maestrano.lib.onelogin.saml.Response;
 import java.util.Random;
+import java.util.Calendar;
 
-class MnoSsoBaseUser
+import java.util.Map;
+import java.util.HashMap;
+import javax.xml.bind.DatatypeConverter;
+import com.google.gson.*;
+import com.google.gson.reflect.*;
+import java.lang.reflect.Type;
+
+import javax.servlet.http.HttpSession;
+import java.util.TimeZone;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+public class MnoSsoBaseUser
 {
   /**
    * Session Object
    */
-  public Object session = null;
+  public HttpSession session = null;
   
   /**
    * User UID
@@ -63,19 +76,21 @@ class MnoSsoBaseUser
    * - Super Admin
    * ---
    * e.g:
-   * { 'org-876' => {
-   *      'name' => 'SomeOrga',
-   *      'role' => 'Super Admin'
+   * { "org-876" => {
+   *      "name" => "SomeOrga",
+   *      "role" => "Super Admin"
    *   }
    * }
    */
-  public Map<String, Map<String, String>> organizations;
+  public HashMap<String,HashMap<String,String>> organizations;
   
   /**
    * User Local Id
    */
-  public String localId = null;
+  public Integer localId = null;
   
+  
+  public Integer getLocalId() { return this.localId; }
   
   /**
    * Construct the MnoSsoBaseUser object from a SAML response
@@ -84,25 +99,25 @@ class MnoSsoBaseUser
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public void MnoSsoBaseUser(Response samlResponse, Object session)
+  public MnoSsoBaseUser(Response samlResponse, HttpSession session)
   {
       // First get the assertion attributes from the SAML
       // response
-      assertAttrs = samlResponse.getAttributes();
+      HashMap<String,String> assertAttrs = samlResponse.getAttributes();
       
       // Populate user attributes from assertions
       this.session = session;
-      this.uid = assertAttrs.get('mno_uid');
-      this.ssoSession = assertAttrs.get('mno_session');
-      this.ssoSessionRecheck = DatatypeConverter.parseDateTime(assertAttrs.get('mno_session_recheck'));
-      this.name = assertAttrs.get('name');
-      this.surname = assertAttrs.get('surname');
-      this.email = assertAttrs.get('email');
-      this.appOwner = (assertAttrs.get('appOwner') == 'true');
+      this.uid = assertAttrs.get("mno_uid");
+      this.ssoSession = assertAttrs.get("mno_session");
+      this.ssoSessionRecheck = DatatypeConverter.parseDateTime(assertAttrs.get("mno_session_recheck"));
+      this.name = assertAttrs.get("name");
+      this.surname = assertAttrs.get("surname");
+      this.email = assertAttrs.get("email");
+      this.appOwner = (assertAttrs.get("appOwner") == "true");
       
       Gson gson = new Gson();
       Type stringStringMap = new TypeToken<Map<String, Map<String, String>>>(){}.getType();
-      Map<String,String> map = gson.fromJson(assertAttrs.get('organizations'), stringStringMap);
+      HashMap<String,HashMap<String,String>> map = gson.fromJson(assertAttrs.get("organizations"), stringStringMap);
       this.organizations = map;
   }
   
@@ -119,7 +134,7 @@ class MnoSsoBaseUser
    * 
    * @return localId if a local user matched, null otherwise
    */
-  public function matchLocal()
+  public Integer matchLocal()
   {
     // Try to get the local id from uid
     this.localId = this.getLocalIdByUid();
@@ -149,15 +164,15 @@ class MnoSsoBaseUser
    * organization owning this app) or public
    * (no link whatsoever with this application)
    *
-   * @return 'public' or 'private'
+   * @return "public" or "private"
    */
   public String accessScope()
   {
     if (this.localId != null || this.appOwner || this.organizations.size() > 0) {
-      return 'private';
+      return "private";
     }
       
-    return 'public';
+    return "public";
   }
   
   /**
@@ -173,7 +188,7 @@ class MnoSsoBaseUser
 
         // If a user has been created successfully
         // then make sure UID is set on it
-        if (this.localId) {
+        if (this.localId != null) {
           this.setLocalUid();
         }
      }
@@ -226,7 +241,7 @@ class MnoSsoBaseUser
   }
   
   /**
-   * Set all 'soft' details on the user (like name, surname, email)
+   * Set all "soft" details on the user (like name, surname, email)
    * This is a convenience method that must be implemented in
    * MnoSsoUser but is not mandatory.
    *
@@ -248,15 +263,15 @@ class MnoSsoBaseUser
   public Boolean signIn()
   {
     if (this.setInSession()) {
-      this.session.set('mno_uid',this.uid);
-      this.session.set('mno_session', this.ssoSession);
+      this.session.setAttribute("mno_uid",this.uid);
+      this.session.setAttribute("mno_session", this.ssoSession);
       
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
       df.setTimeZone(tz);
       String recheckISO = df.format(this.ssoSessionRecheck);
       
-      this.session.set('mno_session_recheck', recheckISO);
+      this.session.setAttribute("mno_session_recheck", recheckISO);
       
       return true;
     }
@@ -270,14 +285,14 @@ class MnoSsoBaseUser
    *
    * @return string a random password
    */
-  private function generatePassword()
+  private String generatePassword()
   {
-    length = 20;
-    characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    randomString = '';
+    Integer length = 20;
+    String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    String randomString = "";
     Random randomGenerator = new Random();
-    for (i = 0; i < length; i++) {
-        randomString += characters.charAt(randomGenerator.nextInt((characters.length - 1)));
+    for (Integer i = 0; i < length; i++) {
+        randomString += characters.charAt(randomGenerator.nextInt((characters.length() - 1)));
     }
     return randomString;
   }
@@ -290,7 +305,7 @@ class MnoSsoBaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-   private function setInSession()
+   private Boolean setInSession()
    {
      return null;
    }

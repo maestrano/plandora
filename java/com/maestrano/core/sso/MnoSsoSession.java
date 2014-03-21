@@ -5,11 +5,15 @@ import javax.xml.bind.DatatypeConverter;
 import java.util.Calendar;
 import java.net.*;
 import java.io.*;
-
-
 import com.google.gson.Gson;
 
-class MnoSsoSession
+import javax.servlet.http.HttpSession;
+
+import java.util.TimeZone;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+public class MnoSsoSession
 {
   /**
    * Maestrano Settings object
@@ -19,7 +23,7 @@ class MnoSsoSession
   /**
    * Session object
    */
-  public Object session = null;
+  public HttpSession session = null;
   
   /**
    * User UID
@@ -40,14 +44,14 @@ class MnoSsoSession
    * Construct the MnoSsoSession object
    *
    */
-  public function MnoSsoSession(MnoSettings mnoSettings, Object session)
+  public MnoSsoSession(MnoSettings mnoSettings, HttpSession session)
   {
       // Populate attributes from params
       this.settings = mnoSettings;
       this.session = session;
-      this.uid = session.get('mno_uid');
-      this.token = session.get('mno_session');
-      this.recheck = DatatypeConverter.parseDateTime(session.get('mno_session_recheck'));
+      this.uid = (String) session.getAttribute("mno_uid");
+      this.token = (String) session.getAttribute("mno_session");
+      this.recheck = DatatypeConverter.parseDateTime((String) session.getAttribute("mno_session_recheck"));
       
   }
   
@@ -74,7 +78,7 @@ class MnoSsoSession
     */
     public String sessionCheckUrl()
     {
-      url = this.settings.getSsoSessionCheckUrl() + '/' + this.uid + '?session=' + this.token;
+      String url = this.settings.getSsoSessionCheckUrl() + "/" + this.uid + "?session=" + this.token;
       return url;
     }
     
@@ -85,16 +89,20 @@ class MnoSsoSession
      * @return string page content
      */
     public String fetchUrl(String url) {
-      URL urlObj = new URL(url);
+      String outputLine = "";
       
-      BufferedReader in = new BufferedReader(
-      new InputStreamReader(oracle.openStream()));
-      String inputLine;
-      String outputLine;
+      try {
+        URL urlObj = new URL(url);
+        
+        BufferedReader in = new BufferedReader(
+        new InputStreamReader(urlObj.openStream()));
+        String inputLine;
       
-      while ((inputLine = in.readLine()) != null)
-          outputLine = outputLine + inputLine;
-      in.close();
+      
+        while ((inputLine = in.readLine()) != null)
+            outputLine = outputLine + inputLine;
+        in.close();
+      } catch (Exception e) {}
       
       return outputLine;
     }
@@ -103,11 +111,11 @@ class MnoSsoSession
    * Perform remote session check on Maestrano
    */
    public Boolean performRemoteCheck() {
-     json = this.fetchUrl(this.sessionCheckUrl());
+     String json = this.fetchUrl(this.sessionCheckUrl());
      if (json != null) {
       SessionJsonData response = new Gson().fromJson(json, SessionJsonData.class);
       
-      if (response.getValid() && response.getRecheck != null) {
+      if (response.getValid() && (response.getRecheck() != null)) {
         this.recheck = DatatypeConverter.parseDateTime(response.getRecheck());
         return true;
       }
@@ -132,7 +140,7 @@ class MnoSsoSession
           df.setTimeZone(tz);
           String recheckISO = df.format(this.recheck.getTime());
           
-          this.session.set('mno_session_recheck', recheckISO);
+          this.session.setAttribute("mno_session_recheck", recheckISO);
           return true;
         } else {
           return false;

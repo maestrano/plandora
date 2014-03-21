@@ -3,20 +3,18 @@ package com.maestrano.app.sso;
 import com.maestrano.core.sso.MnoSsoBaseUser;
 import com.maestrano.lib.onelogin.saml.Response;
 import java.util.Random;
+import javax.servlet.http.HttpSession;
 
-class MnoSsoBaseUser extends MnoSsoBaseUser 
+public class MnoSsoUser extends MnoSsoBaseUser 
 {
   
   /**
    * Construct the MnoSsoBaseUser object from a SAML response
    *
-   * @param OneLoginSamlResponse samlResponse
-   *   A SamlResponse object from Maestrano containing details
-   *   about the user being authenticated
    */
-  public void MnoSsoUser(Response samlResponse, Object session)
+  public MnoSsoUser(Response samlResponse, HttpSession session)
   {
-    super(samlResponse,session);
+    super(samlResponse, session);
   }
   
   /**
@@ -77,7 +75,7 @@ class MnoSsoBaseUser extends MnoSsoBaseUser
   }
   
   /**
-   * Set all 'soft' details on the user (like name, surname, email)
+   * Set all "soft" details on the user (like name, surname, email)
    * This is a convenience method that must be implemented in
    * MnoSsoUser but is not mandatory.
    *

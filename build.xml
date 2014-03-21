@@ -79,7 +79,10 @@
   	
 		<copy file="${src}/application.xml" overwrite="true" tofile="${build}/application.xml"/>			
 		<replace file="${build}/application.xml" token="pandora" value="${application}"/>
-   		
+   	
+                <copy file="${src}/context.xml" overwrite="true" tofile="${build}/context.xml"/>
+                <replace file="${build}/context.xml" token="pandora" value="${application}"/>
+	
 		<war destfile="${dist}/${application}.war" webxml="${src}/web.xml" >						
 			<zipfileset dir="${web-tree}/jsp" prefix="jsp">
 				<include name="**/*.jsp" />
@@ -107,6 +110,9 @@
  			<zipfileset dir="${build}" prefix="META-INF">
  				<include name="**/application.xml"/>
  			</zipfileset>
+                        <zipfileset dir="${build}" prefix="META-INF">
+                                <include name="**/context.xml"/>
+                        </zipfileset>
   			<lib dir="${lib}">
 	  			<exclude name="**/servlet.jar"/>
 			</lib>		

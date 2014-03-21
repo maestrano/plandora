@@ -55,7 +55,7 @@
   		</init-param>
   		<init-param>
 			<param-name>jdbc_host</param-name>
-			<param-value>jdbc:mysql://localhost:3306/plandora</param-value>  		
+			<param-value>jdbc:mysql://localhost:8889/plandora</param-value>  		
   		</init-param>
   		<init-param>
 			<param-name>jdbc_user</param-name>

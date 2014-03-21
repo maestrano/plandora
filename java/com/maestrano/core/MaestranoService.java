@@ -1,10 +1,12 @@
 package com.maestrano.core;
 
-class MaestranoService
+import com.maestrano.core.sso.*;
+
+public class MaestranoService
 {
   private static MaestranoService instance = null;
   
-  public String afterSsoSignInPath = '/';
+  public String afterSsoSignInPath;
   private MnoSettings settings;
   
   /**
@@ -12,14 +14,16 @@ class MaestranoService
    *
    * this is private constructor (use getInstance to get an instance of this class)
    */
-  private void MaestranoService() {}
+  private MaestranoService() {
+    this.afterSsoSignInPath = "/";
+  }
   
   /**
    * Configure the service by assigning settings
    */
   public static void configure(MnoSettings configSettings)
   {
-      this.getInstance().settings = configSettings;
+      getInstance().settings = configSettings;
   }
    
   /**
@@ -28,10 +32,10 @@ class MaestranoService
    */
   public static MaestranoService getInstance()
   {
-      if (this.instance == null) {
-        this.instance = new MaestranoService();
+      if (instance == null) {
+        instance = new MaestranoService();
       }
-      return this.instance;
+      return instance;
   }
    
    /**
@@ -106,9 +110,9 @@ class MaestranoService
   /**
    * Set the after sso signin path
    */
-  public static void setAfterSsoSignInPath(path)
+  public static void setAfterSsoSignInPath(String path)
   {
-    this.instance.afterSsoSignInPath = path;
+    getInstance().afterSsoSignInPath = path;
   }
   
   /**

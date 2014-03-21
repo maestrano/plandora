@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.HashMap;
+
 public class Response {
 	
 	private Document xmlDoc;
@@ -79,12 +81,12 @@ public class Response {
 		return nodes.item(0).getTextContent();
 	}
   
-  public HashMap<String> getAttributes() {
-    HashMap attributes;
+  public HashMap<String,String> getAttributes() {
+    HashMap<String,String> attributes = new HashMap<String,String>();
     
     NodeList nodes = xmlDoc.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "Attribute");
-    for (int i = 0; i < nodeList.getLength(); i++) {
-        Node node = nodeList.item(i);
+    for (int i = 0; i < nodes.getLength(); i++) {
+        Node node = nodes.item(i);
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
           attributes.put(node.getNodeName(),node.getNodeValue());
         }
