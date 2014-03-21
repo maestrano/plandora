@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.maestrano.core.*,com.maestrano.core.sso.*,com.maestrano.app.sso.*" %>
+<%@ page import="com.maestrano.core.*,com.maestrano.core.sso.*,com.maestrano.app.config.*, com.maestrano.app.sso.*" %>
 <%@ page import="com.maestrano.lib.onelogin.*,com.maestrano.lib.onelogin.saml.*,org.apache.log4j.Logger" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -9,7 +9,12 @@
 </head>
 <body>
 <%
+  
+  // Get the settings
+  MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  
   // Get Maestrano Service
+  MaestranoService.configure(mnoSettings);
   MaestranoService maestrano = MaestranoService.getInstance();
   
   // user account specific settings. Import the certificate here

@@ -1,6 +1,6 @@
-<%@page import="java.net.URLEncoder,org.apache.log4j.Logger"%>
+<%@page import="java.net.URLEncoder"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.maestrano.core.*" %>
+<%@ page import="com.maestrano.core.*,com.maestrano.app.config.*" %>
 <%@ page import="com.maestrano.lib.onelogin.saml.*,com.maestrano.lib.onelogin.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -9,7 +9,11 @@
 <title>Auth Request</title>
 <%
   
+  // Get the settings
+  MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  
   // Get the Maestrano Service
+  MaestranoService.configure(mnoSettings);
   MaestranoService maestrano = MaestranoService.getInstance();
   
   // the appSettings object contain application specific settings used by the SAML library
@@ -19,7 +23,7 @@
   appSettings.setAssertionConsumerServiceUrl(maestrano.getSettings().getSsoReturnUrl());
 
   // set the issuer of the authentication request. This would usually be the URL of the issuing web application
-  appSettings.setIssuermaestrano.getSettings().getAppName());
+  appSettings.setIssuer(maestrano.getSettings().getAppName());
   
   // the accSettings object contains settings specific to the users account. 
   // At this point, your application must have identified the users origin
