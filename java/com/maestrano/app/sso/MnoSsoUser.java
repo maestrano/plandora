@@ -4,6 +4,7 @@ import com.maestrano.core.sso.MnoSsoBaseUser;
 import com.maestrano.lib.onelogin.saml.Response;
 import java.util.Random;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.Vector;
 import java.util.Map;
@@ -41,21 +42,29 @@ import com.pandora.delegate.SurveyDelegate;
 import com.pandora.delegate.UserDelegate;
 
 import com.pandora.gui.struts.action.ShowSurveyAction;
+import com.pandora.gui.struts.action.LoginAction;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+import org.apache.struts.util.MessageResources;
+import org.apache.struts.util.PropertyMessageResourcesFactory;
 
 public class MnoSsoUser extends MnoSsoBaseUser 
 {
   
   private Connection connection = null;
   
-  public String message;
+  private HttpServletRequest request;
   
   /**
    * Construct the MnoSsoBaseUser object from a SAML response
    *
    */
-  public MnoSsoUser(Response samlResponse, HttpSession session)
+  public MnoSsoUser(Response samlResponse, HttpServletRequest request)
   {
-    super(samlResponse, session);
+    super(samlResponse, request.getSession());
+    
+    this.request = request;
     
     try {
       this.connection = (new DataAccess()).getConnection();
@@ -92,7 +101,7 @@ public class MnoSsoUser extends MnoSsoBaseUser
     		
         try {    
     		    //create a new User TO with informations of username/password
-    		    //this.clearMessages(request);
+    		    (new LoginAction()).clearRequestMessages(request);
 
     		    //authenticate user!
     		    UserDelegate deleg = new UserDelegate();
@@ -100,10 +109,16 @@ public class MnoSsoUser extends MnoSsoBaseUser
             
 		        UserTO childUser = deleg.getUserTopRole(user);
 		        childUser.setPreference(user.getPreference());
-		        //childUser.setBundle(getResources(request));
-        
-		        childUser.setLanguage(user.getLanguage());
-		        childUser.setCountry(user.getCountry());
+		        //childUser.setBundle((new LoginAction()).getRequestResources(this.request));
+            //childUser.setBundle((MessageResources) this.request.getAttribute(Globals.MESSAGES_KEY));
+            //rb = ResourceBundle.getBundle("ApplicationResources", new Locale("en", "US"));
+            MessageResources ms = (new PropertyMessageResourcesFactory()).createResources("ApplicationResources");
+            childUser.setBundle(ms);
+            
+            LogUtil.log(this, LogUtil.LOG_ERROR, "Error Bundle: " + childUser.getBundle());
+            
+		        childUser.setLanguage(this.request.getLocale().getLanguage());
+		        childUser.setCountry(this.request.getLocale().getCountry());
         
 		        //update the user with the newest information about locale
 		        deleg.updateUser(childUser);

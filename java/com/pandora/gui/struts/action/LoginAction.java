@@ -24,6 +24,8 @@ import com.pandora.gui.struts.form.LoginForm;
 import com.pandora.helper.PosterUtil;
 import com.pandora.helper.SessionUtil;
 
+import org.apache.struts.util.MessageResources;
+
 /**
  * This class handle the actions performed into login form 
  */
@@ -191,4 +193,12 @@ public class LoginAction extends GeneralStrutsAction{
 		pref.addPreferences(new PreferenceTO(PreferenceTO.GENERAL_WEBAPP_PATH, path, uto));
 		pdel.insertOrUpdate(pref);				
 	}
+  
+  public MessageResources getRequestResources(HttpServletRequest request) {
+    return getResources(request);
+  }
+  
+  public void clearRequestMessages(HttpServletRequest request){
+    this.clearMessages(request);
+  }
 }

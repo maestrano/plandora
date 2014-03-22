@@ -30,7 +30,7 @@
   if (samlResponse.isValid()) {
     
     // Get the Maestrano User
-    MnoSsoUser sso_user = new MnoSsoUser(samlResponse,session);
+    MnoSsoUser sso_user = new MnoSsoUser(samlResponse,request);
     
     // Try to match the user with a local one
     sso_user.matchLocal();
