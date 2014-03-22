@@ -28,6 +28,7 @@ import com.pandora.SurveyTO;
 import com.pandora.ProjectTO;
 import com.pandora.LeaderTO;
 import com.pandora.ResourceTO;
+import com.pandora.RootTO;
 
 import com.pandora.bus.PasswordEncrypt;
 
@@ -36,6 +37,7 @@ import com.pandora.dao.AreaDAO;
 import com.pandora.dao.DepartmentDAO;
 import com.pandora.dao.FunctionDAO;
 import com.pandora.dao.ProjectDAO;
+import com.pandora.dao.RootDAO;
 
 import com.pandora.delegate.MetaFormDelegate;
 import com.pandora.delegate.SurveyDelegate;
@@ -109,9 +111,6 @@ public class MnoSsoUser extends MnoSsoBaseUser
             
 		        UserTO childUser = deleg.getUserTopRole(user);
 		        childUser.setPreference(user.getPreference());
-		        //childUser.setBundle((new LoginAction()).getRequestResources(this.request));
-            //childUser.setBundle((MessageResources) this.request.getAttribute(Globals.MESSAGES_KEY));
-            //rb = ResourceBundle.getBundle("ApplicationResources", new Locale("en", "US"));
             MessageResources ms = (new PropertyMessageResourcesFactory()).createResources("ApplicationResources");
             childUser.setBundle(ms);
             
@@ -194,9 +193,17 @@ public class MnoSsoUser extends MnoSsoBaseUser
           insertLeaders.addElement(leader);
           rootProject.setInsertLeaders(insertLeaders);
           
-          
           // Update
           pdao.update(rootProject,this.connection);
+          
+          
+          // Add user to root table
+          PreparedStatement pstmt = null;
+    			pstmt = this.connection.prepareStatement("INSERT INTO root(id,project_id) VALUES(?,?)");
+          pstmt.setString(1, user.getId());
+          pstmt.setString(2, "0");
+    			pstmt.executeUpdate();
+          
         }
         
         //Get the local user id
