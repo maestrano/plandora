@@ -1,5 +1,9 @@
 package com.maestrano.app.config;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class AppConfigurator {
   
   private static AppConfigurator instance = null;
@@ -10,19 +14,28 @@ public class AppConfigurator {
   public String ssoReturnUrl;
   
   public AppConfigurator() {
-    String fullHost = "http://localhost:8080/pandora/jsp";
+    
+    // Load Properties
+    Properties prop = new Properties();
+    InputStream input = null;
+    String filename = "1_app.properties";
+    input = AppConfigurator.class.getResourceAsStream(filename);
+    
+    try {
+      prop.load(input);
+    } catch (Exception e) {}
     
     // Application name
-    this.appName = "myapp";
+    this.appName = prop.getProperty("appname");
 
     // Enable Maestrano SSO for this app
-    this.ssoEnabled = true;
+    this.ssoEnabled = prop.getProperty("ssoenabled").equals("true");
 
     // SSO initialization URL
-    this.ssoInitUrl = fullHost + "/maestrano/auth/saml/index.jsp";
+    this.ssoInitUrl = prop.getProperty("ssoiniturl");
 
     // SSO processing url
-    this.ssoReturnUrl = fullHost + "/maestrano/auth/saml/consume.jsp";
+    this.ssoReturnUrl = prop.getProperty("ssoreturnurl");
   }
   
   /**

@@ -52,6 +52,13 @@
        			<include name="**/*.jasper"/>
    			</fileset>			
 		</copy>
+    
+    <!-- Maestrano config files --> 
+		<copy todir="${build}/com/maestrano/app/config">
+   			<fileset dir="${src}/java/com/maestrano/app/config">
+       			<include name="**/*.properties"/>
+   			</fileset>			
+		</copy>
  	</target>	
 
 	<!-- gera arquivo JAR do gantt --> 
