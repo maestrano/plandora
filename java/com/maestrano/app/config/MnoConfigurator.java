@@ -22,10 +22,10 @@ public class MnoConfigurator {
     this.ssoSessionCheckUrl = mnoSsoHost + "/api/v1/auth/saml";
 
     // Access unauthorized page
-    this.ssoAccessUnauthorizedUrl = mnoSsoHost + "/appAccessUnauthorized";
+    this.ssoAccessUnauthorizedUrl = mnoSsoHost + "/app_access_unauthorized";
 
     // Access Logout page
-    this.ssoAccessLogoutUrl = mnoSsoHost + "/appLogout";
+    this.ssoAccessLogoutUrl = mnoSsoHost + "/app_logout";
 
     // Intranet Mode - If enabled then ALL pages require authentication
     this.ssoIntranetMode = false;

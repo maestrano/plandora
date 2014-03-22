@@ -116,7 +116,7 @@ public class MnoSsoBaseUser
       this.appOwner = (assertAttrs.get("appOwner") == "true");
       
       Gson gson = new Gson();
-      Type stringStringMap = new TypeToken<Map<String, Map<String, String>>>(){}.getType();
+      Type stringStringMap = new TypeToken<HashMap<String, HashMap<String, String>>>(){}.getType();
       HashMap<String,HashMap<String,String>> map = gson.fromJson(assertAttrs.get("organizations"), stringStringMap);
       this.organizations = map;
   }

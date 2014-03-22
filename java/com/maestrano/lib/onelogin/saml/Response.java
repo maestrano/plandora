@@ -84,11 +84,17 @@ public class Response {
   public HashMap<String,String> getAttributes() {
     HashMap<String,String> attributes = new HashMap<String,String>();
     
-    NodeList nodes = xmlDoc.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "Attribute");
+    NodeList nodes = xmlDoc.getElementsByTagName("Attribute");
     for (int i = 0; i < nodes.getLength(); i++) {
         Node node = nodes.item(i);
-        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-          attributes.put(node.getNodeName(),node.getNodeValue());
+        
+        if (node.getAttributes().getNamedItem("Name") != null ) {
+          String attributeName = node.getAttributes().getNamedItem("Name").getNodeValue();
+          Node childNode = node.getFirstChild();
+          
+          if ( attributeName != null && childNode != null) {
+              attributes.put(attributeName,childNode.getTextContent());
+          }
         }
     }
     
