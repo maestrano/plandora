@@ -83,33 +83,7 @@ public class GeneralStruts extends ActionServlet {
 		    } else {
 			    if (uto!=null){
 				    if (uto instanceof RootTO) {
-				        response = ( frmPath.equalsIgnoreCase("/manageuser") || frmPath.equalsIgnoreCase("/manageproject") || 
-				                	 frmPath.equalsIgnoreCase("/managedb")  || frmPath.equalsIgnoreCase("/managearea") || 
-				                	 frmPath.equalsIgnoreCase("/depart") || frmPath.equalsIgnoreCase("/category") || 
-				                	 frmPath.equalsIgnoreCase("/managemetafield") || frmPath.equalsIgnoreCase("/managecategory") ||
-				                	 frmPath.equalsIgnoreCase("/managereport") || frmPath.equalsIgnoreCase("/managenotification") ||  
-				                	 frmPath.equalsIgnoreCase("/manageoption") || frmPath.equalsIgnoreCase("/manageoccurrence") ||
-				                	 frmPath.equalsIgnoreCase("/managehistoccurrence") || frmPath.equalsIgnoreCase("/viewkb") ||
-				                	 frmPath.equalsIgnoreCase("/managerisk") || frmPath.equalsIgnoreCase("/managehistrisk") ||
-				                	 frmPath.equalsIgnoreCase("/manageattachment") || frmPath.equalsIgnoreCase("/downloadAttachment") ||
-				                	 frmPath.equalsIgnoreCase("/manageSurvey") || frmPath.equalsIgnoreCase("/manageCustomForm") ||
-				                	 frmPath.equalsIgnoreCase("/viewMindMap") || frmPath.equalsIgnoreCase("/visorFreemind.swf")|| frmPath.equalsIgnoreCase("/open-flash-chart") ||
-				                	 frmPath.equalsIgnoreCase("/manageMetaForm") || frmPath.equalsIgnoreCase("/showSurvey") ||
-				                	 frmPath.equalsIgnoreCase("/showGadgetProperty") ||  frmPath.equalsIgnoreCase("/manageCompany") ||
-				                	 frmPath.equalsIgnoreCase("/showRepositoryViewer") || frmPath.equalsIgnoreCase("/manageTemplate") ||
-				                	 frmPath.equalsIgnoreCase("/showAgilePanel") || frmPath.equalsIgnoreCase("/showAgilePanelReq") ||
-				                	 frmPath.equalsIgnoreCase("/showAgilePanelTask") || frmPath.equalsIgnoreCase("/showRepositoryViewerCustomer") ||
-				                	 frmPath.equalsIgnoreCase("/manageInvoice") || frmPath.equalsIgnoreCase("/showSurveyQuestion") ||
-				                	 frmPath.startsWith("/repositoryfileviewer") || frmPath.equalsIgnoreCase("/showInvoiceItem") ||
-				                	 frmPath.equalsIgnoreCase("/manageHistInvoice") || frmPath.equalsIgnoreCase("/manageGadget") ||
-				                	 frmPath.equalsIgnoreCase("/showNewArtifact") || frmPath.equalsIgnoreCase("/manageArtifact") ||
-				                	 frmPath.equalsIgnoreCase("/showBrowseArtifact") || frmPath.equalsIgnoreCase("/showResCapacityPanel") ||
-				                	 frmPath.equalsIgnoreCase("/showResCapacityEdit") || frmPath.equalsIgnoreCase("/showCostPanel") ||
-				                	 frmPath.equalsIgnoreCase("/showCostEdit") || frmPath.equalsIgnoreCase("/manageExpense") ||
-				                	 frmPath.equalsIgnoreCase("/repositoryUpload") || frmPath.equalsIgnoreCase("/showSnipArtifact") ||
-				                	 frmPath.equalsIgnoreCase("/manageOptionPicture") || frmPath.equalsIgnoreCase("/showCostList") ||
-				                	 frmPath.equalsIgnoreCase("/showShortCutPopup") || frmPath.equalsIgnoreCase("/showRssPopup")
-				                	 );
+				        response = true;
 				    } else if (uto instanceof LeaderTO) { 
 				        response = ( frmPath.equalsIgnoreCase("/managehistrequest") || frmPath.equalsIgnoreCase("/manageproject") || 
 				                	 frmPath.equalsIgnoreCase("/manageresourcehome")  || frmPath.equalsIgnoreCase("/refuse")  || 
