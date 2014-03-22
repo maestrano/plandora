@@ -1,1 +1,1 @@
-#ALTER TABLE  `user` ADD  `mno_uid` VARCHAR( 255 ) NULL DEFAULT NULL ;
+ALTER TABLE  `tool_user` ADD  `mno_uid` VARCHAR( 255 ) NULL DEFAULT NULL ;

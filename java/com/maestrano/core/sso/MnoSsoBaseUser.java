@@ -113,7 +113,7 @@ public class MnoSsoBaseUser
       this.name = assertAttrs.get("name");
       this.surname = assertAttrs.get("surname");
       this.email = assertAttrs.get("email");
-      this.appOwner = (assertAttrs.get("appOwner") == "true");
+      this.appOwner = (assertAttrs.get("app_owner").equals("true"));
       
       Gson gson = new Gson();
       Type stringStringMap = new TypeToken<HashMap<String, HashMap<String, String>>>(){}.getType();
@@ -183,7 +183,7 @@ public class MnoSsoBaseUser
    */
    public Integer createLocalUserOrDenyAccess()
    {
-     if (this.localId != null) {
+     if (this.localId == null) {
        this.localId = this.createLocalUser();
 
         // If a user has been created successfully
@@ -202,7 +202,7 @@ public class MnoSsoBaseUser
    * (raise an error otherwise)
    *
    */
-  private Integer createLocalUser()
+  public Integer createLocalUser()
   {
     return null;
   }
@@ -214,7 +214,7 @@ public class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  private Integer getLocalIdByUid()
+  public Integer getLocalIdByUid()
   {
     return null;
   }
@@ -225,7 +225,7 @@ public class MnoSsoBaseUser
    * (raise an error otherwise)
    *
    */
-  private Integer getLocalIdByEmail()
+  public Integer getLocalIdByEmail()
   {
     return null;
   }
@@ -235,7 +235,7 @@ public class MnoSsoBaseUser
    * This method must be re-implemented in MnoSsoUser
    * (raise an error otherwise)
    */
-  private Boolean setLocalUid()
+  public Boolean setLocalUid()
   {
     return null;
   }
@@ -246,7 +246,7 @@ public class MnoSsoBaseUser
    * MnoSsoUser but is not mandatory.
    *
    */
-   private Boolean syncLocalDetails()
+   public Boolean syncLocalDetails()
    {
      return true;
    }
@@ -285,7 +285,7 @@ public class MnoSsoBaseUser
    *
    * @return string a random password
    */
-  private String generatePassword()
+  public String generatePassword()
   {
     Integer length = 20;
     String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -305,7 +305,7 @@ public class MnoSsoBaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-   private Boolean setInSession()
+   public Boolean setInSession()
    {
      return null;
    }
