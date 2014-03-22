@@ -17,6 +17,9 @@
   MaestranoService.configure(mnoSettings);
   MaestranoService maestrano = MaestranoService.getInstance();
   
+  // Set after sso path
+  maestrano.setAfterSsoSignInPath("/pandora/do/login?operation=resolveForward");
+  
   // user account specific settings. Import the certificate here
   AccountSettings accountSettings = new AccountSettings();
   accountSettings.setCertificate(maestrano.getSettings().getSsoX509Certificate());

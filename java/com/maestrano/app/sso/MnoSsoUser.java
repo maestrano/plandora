@@ -5,6 +5,10 @@ import com.maestrano.lib.onelogin.saml.Response;
 import java.util.Random;
 import javax.servlet.http.HttpSession;
 
+import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,14 +17,30 @@ import com.pandora.dao.DataAccess;
 
 import com.pandora.helper.LogUtil;
 
+import com.pandora.TransferObject;
 import com.pandora.UserTO;
 import com.pandora.AreaTO;
 import com.pandora.DepartmentTO;
 import com.pandora.FunctionTO;
+import com.pandora.MetaFormTO;
+import com.pandora.SurveyTO;
+import com.pandora.ProjectTO;
+import com.pandora.LeaderTO;
+import com.pandora.ResourceTO;
+
+import com.pandora.bus.PasswordEncrypt;
+
 import com.pandora.dao.UserDAO;
 import com.pandora.dao.AreaDAO;
 import com.pandora.dao.DepartmentDAO;
 import com.pandora.dao.FunctionDAO;
+import com.pandora.dao.ProjectDAO;
+
+import com.pandora.delegate.MetaFormDelegate;
+import com.pandora.delegate.SurveyDelegate;
+import com.pandora.delegate.UserDelegate;
+
+import com.pandora.gui.struts.action.ShowSurveyAction;
 
 public class MnoSsoUser extends MnoSsoBaseUser 
 {
@@ -55,7 +75,62 @@ public class MnoSsoUser extends MnoSsoBaseUser
    */
    public Boolean setInSession()
    {
-     return null;
+     UserTO user = null;
+     
+     try {
+       UserTO userFilter = new UserTO();
+       userFilter.setUsername(this.uid);
+       user = (new UserDAO()).getObjectByUsername(userFilter);
+     
+     } catch (Exception e) {
+       LogUtil.log(this, LogUtil.LOG_ERROR, "Error while retrieving user for authentication", e);
+     }
+     
+     if (user != null) {
+    		MetaFormDelegate mfrmDel = new MetaFormDelegate();
+    		SurveyDelegate sDel = new SurveyDelegate();
+    		
+        try {    
+    		    //create a new User TO with informations of username/password
+    		    //this.clearMessages(request);
+
+    		    //authenticate user!
+    		    UserDelegate deleg = new UserDelegate();
+		        //user = deleg.authenticateUser(user, true);
+            
+		        UserTO childUser = deleg.getUserTopRole(user);
+		        childUser.setPreference(user.getPreference());
+		        //childUser.setBundle(getResources(request));
+        
+		        childUser.setLanguage(user.getLanguage());
+		        childUser.setCountry(user.getCountry());
+        
+		        //update the user with the newest information about locale
+		        deleg.updateUser(childUser);
+        
+		        //...store current user into http session
+		        this.session.removeAttribute(UserDelegate.CURRENT_USER_SESSION);
+		        this.session.setAttribute(UserDelegate.CURRENT_USER_SESSION, childUser);
+
+    				Vector<MetaFormTO> v = mfrmDel.getMetaFormList();
+    				this.session.setAttribute("metaFormList", v);			
+
+    			  this.session.removeAttribute(ShowSurveyAction.PARTIAL_ANSWERS);
+    				this.session.removeAttribute(UserDelegate.USER_SURVEY_LIST);
+    				Vector<SurveyTO> vs = sDel.getSurveyListByUser(childUser, true);
+   				
+           if (vs!=null && vs.size()>0) {
+    					this.session.setAttribute(UserDelegate.USER_SURVEY_LIST, vs);					
+    				}
+          
+           return true;
+
+    		} catch (Exception e) {
+    			LogUtil.log(this, LogUtil.LOG_ERROR, "Error while authenticating user", e);
+    		}
+     }
+     
+     return false;
    }
   
   /**
@@ -75,7 +150,39 @@ public class MnoSsoUser extends MnoSsoBaseUser
       
       try {
         // Save it
-        (new UserDAO()).insert(user,this.connection);
+        UserDAO dao = new UserDAO();
+        dao.insert(user,this.connection);
+        dao.updatePassword(user);
+        
+        // Add user to root project if admin
+        if (this.isUserAdmin()) {
+          ProjectDAO pdao = new ProjectDAO();
+          
+          ProjectTO filterProject = new ProjectTO();
+          filterProject.setId("0");
+          
+          ProjectTO rootProject = pdao.getProjectById(filterProject,true);
+          
+          // Set updateResource to avoid error
+          rootProject.setUpdateResources(new Vector<ResourceTO>());
+          
+          // Set as resource
+          ResourceTO resource = new ResourceTO(user.getId());
+          Vector<ResourceTO> insertResources = new Vector<ResourceTO>();
+          insertResources.addElement(resource);
+          rootProject.setInsertResources(insertResources);
+          
+          
+          // Set as leader
+          LeaderTO leader = new LeaderTO(user);
+          Vector<LeaderTO> insertLeaders = new Vector<LeaderTO>();
+          insertLeaders.addElement(leader);
+          rootProject.setInsertLeaders(insertLeaders);
+          
+          
+          // Update
+          pdao.update(rootProject,this.connection);
+        }
         
         //Get the local user id
         lid = Integer.parseInt(user.getId());
@@ -107,10 +214,17 @@ public class MnoSsoUser extends MnoSsoBaseUser
       LogUtil.log(this, LogUtil.LOG_ERROR, "Error while building user", e);
     }
     
+    String encPassword = this.generatePassword();
+    try {
+      encPassword = PasswordEncrypt.getInstance().encrypt(this.generatePassword());
+    } catch (Exception e) {
+      LogUtil.log(this, LogUtil.LOG_ERROR, "Error encrypting password",e);
+    }
+    
     user.setUsername(this.uid);
     user.setEmail(this.email);
     user.setName(this.name + ' ' + this.surname);
-    user.setPassword(this.generatePassword());
+    user.setPassword(encPassword);
     user.setArea(area);
     user.setDepartment(department);
     user.setFunction(function);
@@ -119,6 +233,31 @@ public class MnoSsoUser extends MnoSsoBaseUser
     
       
     return user;
+  }
+  
+  /**
+   * Check whether the user should
+   * be set as admin or not
+   */
+  public Boolean isUserAdmin()
+  {
+    Boolean isAdmin = false;
+    
+    if (this.appOwner) {
+      isAdmin = true;
+    } else {
+      for (Map.Entry<String, HashMap<String,String>> entry : this.organizations.entrySet())
+      {
+        HashMap<String,String> organization = entry.getValue();
+        if (organization.get("role").equals("Admin") || organization.get("role").equals("Super Admin")) {
+          isAdmin = true;
+        } else {
+          isAdmin = false;
+        }
+      }
+    }
+    
+    return isAdmin;
   }
   
   /**
