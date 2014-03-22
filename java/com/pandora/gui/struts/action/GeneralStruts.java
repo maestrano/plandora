@@ -18,6 +18,12 @@ import com.pandora.exception.BusinessException;
 import com.pandora.helper.LogUtil;
 import com.pandora.helper.SessionUtil;
 
+import com.maestrano.core.MaestranoService;
+import com.maestrano.core.MnoSettings;
+import com.maestrano.core.sso.MnoSsoSession;
+import com.maestrano.app.config.AppConfigurator;
+import com.maestrano.app.config.MnoConfigurator;
+
 /**
  * This class checks if the current user was connected before actions calling
  */
@@ -52,6 +58,26 @@ public class GeneralStruts extends ActionServlet {
 				
 				//String chartset = SystemSingleton.getInstance().getDefaultEncoding();				
 				//request.setCharacterEncoding(chartset);
+        
+        
+        // Get the settings
+        MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  
+        // Get Maestrano Service
+        MaestranoService.configure(mnoSettings);
+        MaestranoService maestrano = MaestranoService.getInstance();
+        
+        // Check session is still valid
+        if (maestrano.isSsoEnabled()) {
+          if (!maestrano.getSsoSession(request.getSession()).isValid()) {
+            try {
+              response.sendRedirect(maestrano.getSsoInitUrl());
+            } catch (Exception e) {}
+          }
+        }
+        
+        
+        
 				SessionUtil.addEvent(uto, request.getPathInfo());
 				super.process(request, response);
 				

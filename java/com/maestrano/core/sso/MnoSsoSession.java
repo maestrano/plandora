@@ -51,7 +51,10 @@ public class MnoSsoSession
       this.session = session;
       this.uid = (String) session.getAttribute("mno_uid");
       this.token = (String) session.getAttribute("mno_session");
-      this.recheck = DatatypeConverter.parseDateTime((String) session.getAttribute("mno_session_recheck"));
+      
+      String iso8601 = (String) session.getAttribute("mno_session_recheck");
+      iso8601 = iso8601.replace("+0000", "Z");
+      this.recheck = DatatypeConverter.parseDateTime(iso8601);
       
   }
   
@@ -136,7 +139,7 @@ public class MnoSsoSession
         if (this.performRemoteCheck()) {
           
           TimeZone tz = TimeZone.getTimeZone("UTC");
-          DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
           df.setTimeZone(tz);
           String recheckISO = df.format(this.recheck.getTime());
           

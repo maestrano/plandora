@@ -26,6 +26,13 @@ import com.pandora.helper.SessionUtil;
 
 import org.apache.struts.util.MessageResources;
 
+
+import com.maestrano.core.MaestranoService;
+import com.maestrano.core.MnoSettings;
+import com.maestrano.core.sso.MnoSsoSession;
+import com.maestrano.app.config.AppConfigurator;
+import com.maestrano.app.config.MnoConfigurator;
+
 /**
  * This class handle the actions performed into login form 
  */
@@ -43,7 +50,25 @@ public class LoginAction extends GeneralStrutsAction{
 		frm.setPassword("");
 		
 		this.clearMessages(request);
-		return mapping.findForward(forward);
+    
+    
+    // Get the settings
+    MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  
+    // Get Maestrano Service
+    MaestranoService.configure(mnoSettings);
+    MaestranoService maestrano = MaestranoService.getInstance();
+    
+    
+    // Redirect to Maestrano SSO if enabled
+    if (maestrano.isSsoEnabled()) {
+      try {
+        response.sendRedirect(maestrano.getSsoInitUrl());
+      } catch (Exception e) {}
+      
+    }
+    
+    return mapping.findForward(forward);
 	}
 	
 
@@ -55,7 +80,8 @@ public class LoginAction extends GeneralStrutsAction{
 		MetaFormDelegate mfrmDel = new MetaFormDelegate();
 		SurveyDelegate sDel = new SurveyDelegate();
 		String forward = "showLogin";
-		try {    
+    
+    try {    
 		    //create a new User TO with informations of username/password
 		    this.clearMessages(request);
 		    LoginForm frm = (LoginForm) form;
@@ -124,6 +150,20 @@ public class LoginAction extends GeneralStrutsAction{
 	    request.getSession().removeAttribute(UserDelegate.CURRENT_USER_SESSION);
 	    request.getSession().invalidate();
 	    
+      // Get the settings
+      MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  
+      // Get Maestrano Service
+      MaestranoService.configure(mnoSettings);
+      MaestranoService maestrano = MaestranoService.getInstance();
+      
+      // Redirect to Maestrano logout page
+      if (maestrano.isSsoEnabled()) {
+        try {
+          response.sendRedirect(maestrano.getSsoLogoutUrl());
+        } catch (Exception e) {}
+      }
+      
 	    return mapping.findForward(forward);
 	}
 

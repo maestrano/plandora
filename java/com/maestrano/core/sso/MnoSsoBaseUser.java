@@ -267,7 +267,7 @@ public class MnoSsoBaseUser
       this.session.setAttribute("mno_session", this.ssoSession);
       
       TimeZone tz = TimeZone.getTimeZone("UTC");
-      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
       df.setTimeZone(tz);
       String recheckISO = df.format(this.ssoSessionRecheck.getTime());
       

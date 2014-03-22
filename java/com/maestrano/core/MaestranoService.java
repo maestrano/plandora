@@ -1,6 +1,7 @@
 package com.maestrano.core;
 
 import com.maestrano.core.sso.*;
+import javax.servlet.http.HttpSession;
 
 public class MaestranoService
 {
@@ -57,9 +58,9 @@ public class MaestranoService
    /**
     * Return the maestrano sso session
     */
-  public MnoSsoSession getSsoSession()
+  public MnoSsoSession getSsoSession(HttpSession session)
   {
-    return new MnoSsoSession(this.settings, null);
+    return new MnoSsoSession(this.settings, session);
   }
   
   /**
