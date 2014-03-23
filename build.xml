@@ -67,7 +67,7 @@
 		<jar jarfile="${dist}/plandoraInterface.jar" basedir="${build}"
 			excludes="**/lib/**, **/pandora/gui/**, **/org/**, **/tests/**, **/taglib/**, **/dao/*DAO*, **/struts/**, **/helper/SessionHelper.class, **/helper/LogHelper.class, **/helper/HtmlHelper.class, **/helper/XmlDomParse.class, **/*.jasper, **/*.properties , **/bus/GeneralTimer.class, **/bus/A*BUS.class, **/bus/C*BUS.class, **/bus/D*BUS.class, **/bus/E*BUS.class, **/bus/F*BUS.class, **/bus/M*BUS.class, **/bus/P*.class, **/bus/R*BUS.class, **/bus/T*BUS.class, **/bus/U*BUS.class, **/acceptanceTest/**" >
 		</jar>
-
+    
 		<copy file="${web-tree}/images/newTask.gif" overwrite="true" tofile="${build}/newTask.gif"/>
 		<jar jarfile="${dist}/thinclient.jar" basedir="${build}"
 			excludes="**/lib/**, **/pandora/exception/**, **/delegate/**, **/org/**, **/tests/**, **/bus/**, **/taglib/**, **/dao/**, **/struts/**, **/helper/SessionHelper.class, **/helper/LogHelper.class, **/helper/HtmlHelper.class, **/helper/XmlDomParse.class, **/imp/**, **/acceptanceTest/**, **/pandora/*TO.class, **/*.jasper, **/gantt/**, **/flowchart/**" >
@@ -91,7 +91,11 @@
                 <replace file="${build}/context.xml" token="pandora" value="${application}"/>
 	
 		<war destfile="${dist}/${application}.war" webxml="${src}/web.xml" >						
-			<zipfileset dir="${web-tree}/jsp" prefix="jsp">
+			<!-- Include mno version in top dir -->
+      <zipfileset dir="${src}">
+				<include name=".mno-version" />			
+			</zipfileset>
+      <zipfileset dir="${web-tree}/jsp" prefix="jsp">
 				<include name="**/*.jsp" />
 				<include name="**/*.swf" />
 				<include name="**/*.gif" />
