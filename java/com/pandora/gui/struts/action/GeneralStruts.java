@@ -46,6 +46,24 @@ public class GeneralStruts extends ActionServlet {
 
 		try{	
 			UserTO uto = SessionUtil.getCurrentUser(request);
+      
+      if (uto != null && uto.getId() != null) {
+        // Get the settings
+        MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(request), MnoConfigurator.getInstance());
+
+        // Get Maestrano Service
+        MaestranoService.configure(mnoSettings);
+        MaestranoService maestrano = MaestranoService.getInstance();
+      
+        // Check session is still valid
+        if (maestrano.isSsoEnabled()) {
+          if (!maestrano.getSsoSession(request.getSession()).isValid()) {
+            try {
+              response.sendRedirect(maestrano.getSsoInitUrl());
+            } catch (Exception e) {}
+          }
+        }
+      }
 			
 			//Check if the User is in the session and if user role has permission to use the form
 			if (request.getPathInfo()!=null && this.checkGrants(uto, request)){
@@ -58,25 +76,6 @@ public class GeneralStruts extends ActionServlet {
 				
 				//String chartset = SystemSingleton.getInstance().getDefaultEncoding();				
 				//request.setCharacterEncoding(chartset);
-        
-        
-        // Get the settings
-        MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
-  
-        // Get Maestrano Service
-        MaestranoService.configure(mnoSettings);
-        MaestranoService maestrano = MaestranoService.getInstance();
-        
-        // Check session is still valid
-        if (maestrano.isSsoEnabled()) {
-          if (!maestrano.getSsoSession(request.getSession()).isValid()) {
-            try {
-              response.sendRedirect(maestrano.getSsoInitUrl());
-            } catch (Exception e) {}
-          }
-        }
-        
-        
         
 				SessionUtil.addEvent(uto, request.getPathInfo());
 				super.process(request, response);

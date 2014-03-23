@@ -53,9 +53,10 @@ public class MnoSsoSession
       this.token = (String) session.getAttribute("mno_session");
       
       String iso8601 = (String) session.getAttribute("mno_session_recheck");
-      iso8601 = iso8601.replace("+0000", "Z");
-      this.recheck = DatatypeConverter.parseDateTime(iso8601);
-      
+      if (iso8601 != null) {
+        iso8601 = iso8601.replace("+0000", "Z");
+        this.recheck = DatatypeConverter.parseDateTime(iso8601);
+      }
   }
   
   /**

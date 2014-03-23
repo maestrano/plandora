@@ -10,7 +10,7 @@
 <%
   
   // Get the settings
-  MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+  MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(request), MnoConfigurator.getInstance());
   
   // Get the Maestrano Service
   MaestranoService.configure(mnoSettings);

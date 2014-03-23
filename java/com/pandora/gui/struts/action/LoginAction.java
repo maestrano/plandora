@@ -53,7 +53,7 @@ public class LoginAction extends GeneralStrutsAction{
     
     
     // Get the settings
-    MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+    MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(request), MnoConfigurator.getInstance());
   
     // Get Maestrano Service
     MaestranoService.configure(mnoSettings);
@@ -151,7 +151,7 @@ public class LoginAction extends GeneralStrutsAction{
 	    request.getSession().invalidate();
 	    
       // Get the settings
-      MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(), MnoConfigurator.getInstance());
+      MnoSettings mnoSettings = new MnoSettings(AppConfigurator.getInstance(request), MnoConfigurator.getInstance());
   
       // Get Maestrano Service
       MaestranoService.configure(mnoSettings);
