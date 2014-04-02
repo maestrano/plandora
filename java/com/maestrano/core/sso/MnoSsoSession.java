@@ -13,6 +13,8 @@ import java.util.TimeZone;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import com.pandora.helper.LogUtil;
+
 public class MnoSsoSession
 {
   /**
@@ -106,7 +108,9 @@ public class MnoSsoSession
         while ((inputLine = in.readLine()) != null)
             outputLine = outputLine + inputLine;
         in.close();
-      } catch (Exception e) {}
+      } catch (Exception e) {
+        LogUtil.log(this, LogUtil.LOG_ERROR, "Error while retrieving remote session info", e);
+      }
       
       return outputLine;
     }
@@ -116,7 +120,7 @@ public class MnoSsoSession
    */
    public Boolean performRemoteCheck() {
      String json = this.fetchUrl(this.sessionCheckUrl());
-     if (json != null) {
+     if (json != null && !json.isEmpty()) {
       SessionJsonData response = new Gson().fromJson(json, SessionJsonData.class);
       
       if (response.getValid() && (response.getRecheck() != null)) {

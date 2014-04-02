@@ -53,12 +53,17 @@
    			</fileset>			
 		</copy>
     
-    <!-- Maestrano config files --> 
+    <!-- Maestrano config and migration files --> 
 		<copy todir="${build}/com/maestrano/app/config">
    			<fileset dir="${src}/java/com/maestrano/app/config">
        			<include name="**/*.properties"/>
    			</fileset>			
 		</copy>
+                <copy todir="${build}/com/maestrano/app/db">
+                        <fileset dir="${src}/java/com/maestrano/app/db">
+                        <include name="**/*.sql"/>
+                        </fileset>
+                </copy>
  	</target>	
 
 	<!-- gera arquivo JAR do gantt --> 
