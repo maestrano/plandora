@@ -7,13 +7,6 @@
     	<session-timeout>360</session-timeout>    <!-- in minutes -->
 	</session-config>
   
-  <!-- Define root page -->
-  <welcome-file-list>
-  	<welcome-file>
-  		/login?operation=resolveForward
-  	</welcome-file>
-  </welcome-file-list>
-  
 	<!-- Main servlet of Struts -->
 	<servlet>
   		<servlet-name>main</servlet-name>
@@ -32,6 +25,7 @@
 	<servlet-mapping> 
 		<servlet-name>main</servlet-name>
 		<url-pattern>/do/*</url-pattern>
+    <url-pattern>/do/</url-pattern>
 	</servlet-mapping>
 
 	<!-- the kickoff servlet used to setup Plandora startup parameters -->
