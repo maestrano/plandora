@@ -6,7 +6,14 @@
     <session-config>
     	<session-timeout>360</session-timeout>    <!-- in minutes -->
 	</session-config>
-
+  
+  <!-- Define root page -->
+  <welcome-file-list>
+  	<welcome-file>
+  		/login?operation=resolveForward
+  	</welcome-file>
+  </welcome-file-list>
+  
 	<!-- Main servlet of Struts -->
 	<servlet>
   		<servlet-name>main</servlet-name>
