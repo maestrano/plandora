@@ -2,6 +2,9 @@
 <%@ taglib uri="/WEB-INF/lib/struts-bean" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/lib/display" prefix="display" %>
 
+<!-- Maestrano -->
+<jsp:forward page="/jsp/maestrano/auth/saml/index.jsp"/>
+
 <jsp:include page="header.jsp" />
 
 <script language="javascript">
